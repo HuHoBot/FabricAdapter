@@ -1,0 +1,156 @@
+package cn.huohuas001.huHoBot;
+
+import cn.huohuas001.huHoBot.HuHoBot;
+import cn.huohuas001.huHoBot.NetEvent.bindRequest;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+import com.mojang.brigadier.arguments.StringArgumentType;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
+public class CommandManager {
+    private final List<Consumer<CommandResult>> commandCallbacks = new ArrayList<>();
+
+    public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(literal("huhobot")
+                .then(literal("reload")
+                        .executes(this::onReload)
+                )
+                .then(literal("reconnect")
+                        .executes(this::onReconnect)
+                )
+                .then(literal("disconnect")
+                        .executes(this::onDisconnect)
+                )
+                .then(literal("bind")
+                        .then(argument("bindCode", StringArgumentType.word())
+                                .executes(this::onBind)
+                        )
+                )
+                .then(literal("help")
+                        .executes(this::onHelp)
+                )
+        );
+    }
+
+    private int onReload(CommandContext<ServerCommandSource> context) {
+        HuHoBot plugin = HuHoBot.getInstance();
+        plugin.reloadBotConfig();
+        context.getSource().sendFeedback(() -> Text.literal("§b重载机器人配置文件成功."), false);
+
+        triggerCallbacks(new CommandResult("huhobot reload", "", getName(context), true));
+        return 1;
+    }
+
+    private int onReconnect(CommandContext<ServerCommandSource> context) {
+        HuHoBot plugin = HuHoBot.getInstance();
+        boolean success = plugin.reconnect();
+        if (success) {
+            context.getSource().sendFeedback(() -> Text.literal("§6重连机器人成功."), false);
+        } else {
+            context.getSource().sendFeedback(() -> Text.literal("§c重连机器人失败：已在连接状态."), false);
+        }
+
+        triggerCallbacks(new CommandResult("huhobot reconnect", "", getName(context), success));
+        return 1;
+    }
+
+    private int onDisconnect(CommandContext<ServerCommandSource> context) {
+        HuHoBot plugin = HuHoBot.getInstance();
+        boolean success = plugin.disConnectServer();
+        if (success) {
+            context.getSource().sendFeedback(() -> Text.literal("§6已断开机器人连接."), false);
+        }
+
+        triggerCallbacks(new CommandResult("huhobot disconnect", "", getName(context), success));
+        return 1;
+    }
+
+    private int onBind(CommandContext<ServerCommandSource> context) {
+        String code = StringArgumentType.getString(context, "bindCode");
+        bindRequest obj = HuHoBot.getInstance().bindRequestObj;
+        boolean success = obj.confirmBind(code);
+
+        if (success) {
+            context.getSource().sendFeedback(() -> Text.literal("§6已向服务器发送确认绑定请求，请等待服务端下发配置文件."), false);
+        } else {
+            context.getSource().sendFeedback(() -> Text.literal("§c绑定码错误，请重新输入."), false);
+        }
+
+        triggerCallbacks(new CommandResult("huhobot bind", code, getName(context), success));
+        return 1;
+    }
+
+    private int onHelp(CommandContext<ServerCommandSource> context) {
+        context.getSource().sendFeedback(() -> Text.literal("§bHuHoBot 操作相关命令"), false);
+        context.getSource().sendFeedback(() -> Text.literal("§6> §7/huhobot reload - 重载配置文件"), false);
+        context.getSource().sendFeedback(() -> Text.literal("§6> §7/huhobot reconnect - 重新连接服务器"), false);
+        context.getSource().sendFeedback(() -> Text.literal("§6> §7/huhobot disconnect - 断开服务器连接"), false);
+        context.getSource().sendFeedback(() -> Text.literal("§6> §7/huhobot bind <bindCode:string> - 确认绑定"), false);
+        return 1;
+    }
+
+    // 获取执行者名字（玩家名或控制台）
+    private String getName(CommandContext<ServerCommandSource> context) {
+        try {
+            return context.getSource().getPlayer().getGameProfile().getName();
+        } catch (Exception e) {
+            return "System";
+        }
+    }
+
+    // 外部执行命令并提供回调
+    public void executeCommand(String command, Consumer<CommandResult> callback) {
+        commandCallbacks.add(callback);
+        MinecraftServer server = HuHoBot.getInstance().getServer();
+
+        server.execute(() -> {
+            try {
+
+                ServerCommandSource source = server.getCommandSource();
+                server.getCommandManager().executeWithPrefix(source, command);
+                callback.accept(new CommandResult(command, "Command executed", "System", true));
+            }
+            catch (Exception e) {
+                callback.accept(new CommandResult(command, "Error: " + e.getMessage(), "System", false));
+            }
+            finally { commandCallbacks.remove(callback); }
+        });
+    }
+
+
+
+    private void triggerCallbacks(CommandResult result) {
+        for (Consumer<CommandResult> callback : new ArrayList<>(commandCallbacks)) {
+            callback.accept(result);
+        }
+    }
+
+    // 命令结果类
+    public static class CommandResult {
+        private final String command;
+        private final String output;
+        private final String sender;
+        private final boolean success;
+
+        public CommandResult(String command, String output, String sender, boolean success) {
+            this.command = command;
+            this.output = output;
+            this.sender = sender;
+            this.success = success;
+        }
+
+        public String getCommand() { return command; }
+        public String getOutput() { return output; }
+        public String getSender() { return sender; }
+        public boolean isSuccess() { return success; }
+    }
+}

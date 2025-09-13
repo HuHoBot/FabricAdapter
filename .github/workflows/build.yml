@@ -1,30 +1,77 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
+name: Fabric Mod CI
 
-name: build
-on: [pull_request, push]
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["1.16.5", "1.17.1", "1.18.2", "1.19.2", "1.20.1", "1.20.4", "1.21.1"]
+        include:
+          - version: "1.16.5"
+            mappings: "1.16.5+build.10"
+            loader: "0.11.7"
+            fabric_api: "0.42.0+1.16"
+          - version: "1.17.1"
+            mappings: "1.17.1+build.65"
+            loader: "0.12.0"
+            fabric_api: "0.46.1+1.17"
+          - version: "1.18.2"
+            mappings: "1.18.2+build.4"
+            loader: "0.13.0"
+            fabric_api: "0.58.0+1.18"
+          - version: "1.19.2"
+            mappings: "1.19.2+build.28"
+            loader: "0.14.0"
+            fabric_api: "0.76.0+1.19"
+          - version: "1.20.1"
+            mappings: "1.20.1+build.10"
+            loader: "0.15.0"
+            fabric_api: "0.83.0+1.20"
+          - version: "1.20.4"
+            mappings: "1.20.4+build.3"
+            loader: "0.15.0"
+            fabric_api: "0.88.0+1.20.4"
+          - version: "1.21.1"
+            mappings: "1.21.1+build.1"
+            loader: "0.16.0"
+            fabric_api: "0.91.0+1.21.1"
+
+    name: Build for Minecraft ${{ matrix.version }}
     steps:
-      - name: checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-      - name: setup jdk
-        uses: actions/setup-java@v4
+
+      - name: Set up JDK 17 with more memory
+        uses: actions/setup-java@v3
         with:
-          java-version: '21'
-          distribution: 'microsoft'
-      - name: make gradle wrapper executable
+          java-version: '17'
+          distribution: 'temurin'
+          # 为 CI 环境增加内存
+          jvm-memory: 6g
+
+      - name: Make gradlew executable
         run: chmod +x ./gradlew
-      - name: build
-        run: ./gradlew build
-      - name: capture build artifacts
+
+      - name: Build for ${{ matrix.version }} with memory optimization
+        run: |
+          ./gradlew build \
+            -Pminecraft_version=${{ matrix.version }} \
+            -Pyarn_mappings=${{ matrix.mappings }} \
+            -Ploader_version=${{ matrix.loader }} \
+            -Pfabric_api_version=${{ matrix.fabric_api }} \
+            -Dorg.gradle.jvmargs="-Xmx4g -Xms2g -XX:MaxMetaspaceSize=1g" \
+            --no-daemon
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
-          path: build/libs/
+          name: huhobot-${{ matrix.version }}
+          path: build/libs/*.jar
+          if-no-files-found: error
