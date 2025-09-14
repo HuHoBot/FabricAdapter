@@ -1,13 +1,14 @@
 plugins {
 	id 'fabric-loom' version '1.3-SNAPSHOT'
 	id 'maven-publish'
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+	archivesName.set("HuHoBot-${project.minecraft_version}-Fabric")
 }
 
 repositories {
@@ -171,6 +172,26 @@ java {
 
 // 确保打包源码前先执行生成任务
 sourcesJar.dependsOn generateServerConfig
+
+tasks.shadowJar {
+	archiveClassifier.set("") // 最终输出就是 .jar，不加 -all 之类的后缀
+	configurations = [project.configurations.runtimeClasspath]
+
+	dependencies {
+		include(dependency("org.yaml:snakeyaml"))
+		include(dependency("com.alibaba.fastjson2:fastjson2"))
+		include(dependency("org.java-websocket:Java-WebSocket"))
+	}
+
+	// 显式排除 Fabric / Minecraft 自带的类
+	exclude("net/fabricmc/**")
+	exclude("net/minecraft/**")
+	exclude("com/mojang/**")
+}
+
+tasks.build {
+	dependsOn tasks.shadowJar
+}
 
 publishing {
 	publications {
