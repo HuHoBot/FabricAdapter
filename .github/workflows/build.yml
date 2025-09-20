@@ -12,36 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ["1.16.5", "1.17.1", "1.18.2", "1.19.2", "1.20.1", "1.20.4", "1.21.1"]
+        version: ["1.20.1"]
         include:
-          - version: "1.16.5"
-            mappings: "1.16.5+build.10"
-            loader: "0.11.7"
-            fabric_api: "0.42.0+1.16"
-          - version: "1.17.1"
-            mappings: "1.17.1+build.65"
-            loader: "0.12.0"
-            fabric_api: "0.46.1+1.17"
-          - version: "1.18.2"
-            mappings: "1.18.2+build.4"
-            loader: "0.13.0"
-            fabric_api: "0.58.0+1.18"
-          - version: "1.19.2"
-            mappings: "1.19.2+build.28"
-            loader: "0.14.0"
-            fabric_api: "0.76.0+1.19"
           - version: "1.20.1"
             mappings: "1.20.1+build.10"
             loader: "0.15.0"
-            fabric_api: "0.83.0+1.20"
-          - version: "1.20.4"
-            mappings: "1.20.4+build.3"
-            loader: "0.15.0"
-            fabric_api: "0.88.0+1.20.4"
-          - version: "1.21.1"
-            mappings: "1.21.1+build.1"
-            loader: "0.16.0"
-            fabric_api: "0.91.0+1.21.1"
+            fabric_api: "0.88.0+1.20.1"
 
     name: Build for Minecraft ${{ matrix.version }}
     steps:
