@@ -49,5 +49,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: huhobot-${{ matrix.version }}
-          path: build/libs/*.jar
+          path: build/libs/!(*-sources).jar
           if-no-files-found: error
