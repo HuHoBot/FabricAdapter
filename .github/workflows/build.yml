@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ["1.16.5","1.17.1","1.18.2","1.19.2","1.20.1","1.21.8"]
+        version: ["1.16.5","1.17.1","1.18.2","1.19.4","1.20.1","1.21.8"]
         include:
           - version: "1.16.5"
             mappings: "1.16.5+build.10"
@@ -25,19 +25,19 @@ jobs:
             fabric_api: "0.46.1+1.17"
 
           - version: "1.18.2"
-            mappings: "1.18.2+build.28"
+            mappings: "1.18.2+build.4"
             loader: "0.17.2"
             fabric_api: "0.77.0+1.18.2"
 
-          - version: "1.19.2"
-            mappings: "1.19.2+build.28"
+          - version: "1.19.4"
+            mappings: "1.19.4+build.2"
             loader: "0.17.2"
-            fabric_api: "0.77.0+1.19.2"
+            fabric_api: "0.87.2+1.19.4"
 
           - version: "1.20.1"
             mappings: "1.20.1+build.10"
             loader: "0.17.2"
-            fabric_api: "0.88.0+1.20.1"
+            fabric_api: "0.92.6+1.20.1"
 
           - version: "1.21.8"
             mappings: "1.21.8+build.1"
