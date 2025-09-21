@@ -2,9 +2,9 @@ name: Fabric Mod CI
 
 on:
   push:
-    branches: [ "1.19+" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "1.19+" ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
