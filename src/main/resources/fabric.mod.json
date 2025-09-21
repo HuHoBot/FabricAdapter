@@ -9,7 +9,7 @@
 	],
 	"contact": {
 		"homepage": "https://huhobot.txssb.cn/",
-		"sources": "https://github.com/yourname/robotmod"
+		"sources": "https://github.com/HuHoBot/FabricAdapter"
 	},
 	"license": "MIT",
 	"icon": "assets/huhobot/icon.png",
@@ -21,7 +21,7 @@
 	},
 	"depends": {
 		"fabricloader": ">=0.14.0",
-		"minecraft": ">=1.18.2",
+		"minecraft": ">=1.16.5",
 		"java": ">=17"
 	},
 	"suggests": {

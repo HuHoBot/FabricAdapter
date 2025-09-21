@@ -27,15 +27,6 @@ public class EventRunner {
         HuHoBot.getInstance().runCommand(command, packId);
     }
 
-    /*void runCommandAsync(String command) {
-        HuHoBot.getScheduler().runTask(() -> {
-            HuHoBot.getScheduler().runTaskLaterAsynchronously(() -> {
-                String sendCqMsg = ServerManager.sendCmd(command, true, true);
-                respone("已执行.\n" + sendCqMsg, "success");
-            }, 20L);
-        });
-    }*/
-
     public boolean EventCall(String packId, JSONObject body) {
         this.packId = packId;
         this.body = body;

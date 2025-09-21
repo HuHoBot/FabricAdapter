@@ -8,7 +8,7 @@ public class Chat extends EventRunner {
         String nick = body.getString("nick");
         String msg = body.getString("msg");
         boolean isPostChat = getConfigManager().isPostChatEnabled();
-        String message = getConfigManager().getChatFormatFromGame().replace("{nick}", nick).replace("{msg}", msg);
+        String message = getConfigManager().getChatFormatFromGame().replace("{name}", nick).replace("{msg}", msg);
         if (isPostChat) {
             HuHoBot.broadcastMessage(message);
         }

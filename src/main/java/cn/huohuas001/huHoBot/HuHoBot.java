@@ -2,7 +2,6 @@ package cn.huohuas001.huHoBot;
 
 import cn.huohuas001.huHoBot.NetEvent.*;
 import cn.huohuas001.huHoBot.Tools.*;
-import cn.huohuas001.huHoBot.CommandManager;
 import com.alibaba.fastjson2.JSONObject;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -10,11 +9,12 @@ import net.minecraft.server.MinecraftServer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import cn.huohuas001.huHoBot.GameEvent.OnChat;
+import cn.huohuas001.huHoBot.GameEvent.ChatListenerApiLegacy;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		customCommand.loadCommandsFromConfig();
 
 		//注册OnChat监听器
-		OnChat.register();
+		ChatListenerApiLegacy.register();
 
 		// 初始化命令管理器
 		commandManager = new CommandManager();
@@ -72,8 +72,9 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			serverInstance = server;
 			onServerStarted();
-			LOGGER.info("Server starting! Bot mod is ready.");
 		});
+
+
 		LOGGER.info("HuHoBot Initialized.");
 	}
 
@@ -142,7 +143,7 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		serverInstance.execute(() -> {
 			commandManager.executeCommand(command,
 					(CommandManager.CommandResult result) -> {
-						String sendCmdMsg = result.getOutput();
+						String sendCmdMsg = result.output();
 						clientManager.getClient().respone("已执行.\n" + sendCmdMsg, "success", packId);
 			});
 		});
@@ -202,9 +203,18 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		}
 	}
 
+	/**
+	 * 兼容不同版本的广播消息方法
+	 * 处理1.17到1.19版本之间的API差异
+	 * @param message 要广播的消息
+	 */
 	public static void broadcastMessage(String message) {
-		serverInstance.sendMessage(Text.of(message));
+		if (serverInstance == null) return;
+		LOGGER.info("[Group Chat] {}", message);
+		serverInstance.getPlayerManager().broadcast(TextBuilder.build( message), false);
 	}
+
+
 
 	/**
 	 * 获取当前Mod的版本号（对应fabric.mod.json中的version字段）
