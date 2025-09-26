@@ -124,10 +124,11 @@ public class CommandManager {
             finally { commandCallbacks.remove(callback); }
         });
     }
-    
+
     private void sendFeedbackCompat(ServerCommandSource source, String text, boolean broadcastToOps) {
         Text textObj = TextBuilder.build(text);
-        source.sendFeedback(textObj, broadcastToOps);
+        // 使用方法引用或 lambda 表达式包装
+        source.sendFeedback(() -> textObj, broadcastToOps);
     }
 
     private void triggerCallbacks(CommandResult result) {
