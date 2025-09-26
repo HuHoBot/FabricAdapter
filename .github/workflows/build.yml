@@ -3,6 +3,12 @@ name: Fabric Mod CI
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - '.github/workflows/release.yml'
+      - 'src/**'
+      - 'versions/**'
+      - 'build.gradle'
+      - 'common.gradle'
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:

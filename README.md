@@ -54,16 +54,16 @@
 ### 环境要求
 
 - Java 8+ Runtime
-- **任意支持的 Fabric 核心**（包括但不限于 1.8+ 版本）
+- **任意支持的 Fabric 核心**（包括但不限于 1.16+ 版本）
 
 ### 快速开始
 
 1. **访问 GitHub Releases 页面**：
 - 打开浏览器，访问 [HuHoBot-FabricAdapter Releases](https://github.com/HuHoBot/FabricAdapter/releases)
-- 下载最新版本的 `HuHoBot-vx.x.x-Fabric.jar` 文件
+- 下载最新版本的 `huhobot-vx.x.x-mcx.x.x-SNAPSHOT` 文件
 
 2. **放置插件文件**：
-- 将下载的 `HuHoBot-vx.x.x-Fabric.jar` 文件放入服务器的 `plugins` 目录中
+- 将下载对应MC版本的 `huhobot-vx.x.x-mcx.x.x-SNAPSHOT` 文件放入服务器的 `mods` 目录中
 
 3. **重启服务器**：
 - 重启你的 Minecraft 服务器以加载新插件
@@ -83,7 +83,7 @@
 #### 注意事项：
 
 - 确保服务器已正确安装 Java 17+ 运行时环境
-- 插件兼容所有支持的 Fabric 核心版本，具体版本请参考官方文档
+- 插件兼容所有支持的 Fabric 核心版本，如没有对应的版本，请自行编译Mod(具体方法见文档)
 
 ## ⚙️ 配置示例
 
@@ -132,7 +132,7 @@ customCommand:
 
 <details>
 <summary>🛡️ 支持哪些服务器版本？</summary>
-✅ 已测试版本：1.8 - 1.21  
+✅ 已测试版本：1.16 - 1.21  
 
 ✅ 理论支持所有Fabric系核心
 </details>
