@@ -9,6 +9,8 @@ on:
       - 'versions/**'
       - 'build.gradle'
       - 'common.gradle'
+    tags:
+      - 'v*'
   pull_request:
     branches: [ main, master ]
   workflow_dispatch:
