@@ -8,9 +8,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import cn.huohuas001.huHoBot.Tools.TextBuilder;
 import net.minecraft.text.Text;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import com.mojang.brigadier.arguments.StringArgumentType;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -127,9 +130,22 @@ public class CommandManager {
 
     private void sendFeedbackCompat(ServerCommandSource source, String text, boolean broadcastToOps) {
         Text textObj = TextBuilder.build(text);
-        // 使用方法引用或 lambda 表达式包装
-        source.sendFeedback(() -> textObj, broadcastToOps);
+        try {
+            // 尝试新版本API (1.20+)
+            Method method = ServerCommandSource.class.getMethod("sendFeedback", Supplier.class, boolean.class);
+            method.invoke(source, (Supplier<Text>) () -> textObj, broadcastToOps);
+        } catch (Exception e) {
+            try {
+                // 回退到旧版本API (1.19.4)
+                Method method = ServerCommandSource.class.getMethod("sendFeedback", Text.class, boolean.class);
+                method.invoke(source, textObj, broadcastToOps);
+            } catch (Exception ex) {
+                // 默认处理
+                source.sendFeedback(textObj, broadcastToOps);
+            }
+        }
     }
+
 
     private void triggerCallbacks(CommandResult result) {
         for (Consumer<CommandResult> callback : new ArrayList<>(commandCallbacks)) {
