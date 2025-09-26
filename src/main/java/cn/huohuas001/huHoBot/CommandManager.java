@@ -140,11 +140,18 @@ public class CommandManager {
                 Method method = ServerCommandSource.class.getMethod("sendFeedback", Text.class, boolean.class);
                 method.invoke(source, textObj, broadcastToOps);
             } catch (Exception ex) {
-                // 默认处理
-                source.sendFeedback(textObj, broadcastToOps);
+                // 最后的兜底方案 - 使用反射调用
+                try {
+                    source.getClass().getMethod("sendFeedback", Text.class, boolean.class)
+                            .invoke(source, textObj, broadcastToOps);
+                } catch (Exception finalEx) {
+                    // 如果所有方法都失败，至少不抛出异常
+                    HuHoBot.LOGGER.error("Failed to send feedback: {}", finalEx.getMessage());
+                }
             }
         }
     }
+
 
 
     private void triggerCallbacks(CommandResult result) {
