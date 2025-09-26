@@ -12,23 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ["1.19.4","1.20.1","1.21.8"]
+        version: [
+          #"1.19.4",
+          "1.20.1",
+          #"1.21.8"
+        ]
         include:
 
-          - version: "1.19.4"
-            mappings: "1.19.4+build.2"
-            loader: "0.17.2"
-            fabric_api: "0.87.2+1.19.4"
+          #- version: "1.19.4"
+          #  mappings: "1.19.4+build.2"
+          #  loader: "0.17.2"
+          #  fabric_api: "0.87.2+1.19.4"
 
           - version: "1.20.1"
             mappings: "1.20.1+build.10"
             loader: "0.17.2"
             fabric_api: "0.92.6+1.20.1"
 
-          - version: "1.21.8"
-            mappings: "1.21.8+build.1"
-            loader: "0.17.2"
-            fabric_api: "0.133.4+1.21.8"
+          #- version: "1.21.8"
+          #  mappings: "1.21.8+build.1"
+          #  loader: "0.17.2"
+          #  fabric_api: "0.133.4+1.21.8"
 
     name: Build for Minecraft ${{ matrix.version }}
     steps:
@@ -64,9 +68,6 @@ jobs:
             build/libs/*.jar
             !build/libs/*-sources.jar
           if-no-files-found: error
-
-
-
 
   release:
     name: Create Release

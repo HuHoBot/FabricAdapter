@@ -1,10 +1,37 @@
+import groovy.json.JsonSlurper
+
 pluginManagement {
 	repositories {
 		maven {
 			name = 'Fabric'
 			url = 'https://maven.fabricmc.net/'
 		}
+		maven {
+			name = 'Jitpack'
+			url = 'https://jitpack.io'
+		}
 		mavenCentral()
 		gradlePluginPortal()
 	}
+	resolutionStrategy {
+		eachPlugin {
+			switch (requested.id.id) {
+				case "com.replaymod.preprocess": {
+					// 使用Fallen-Breath版本的preprocessor
+					useModule("com.github.Fallen-Breath:preprocessor:${requested.version}")
+					break
+				}
+			}
+		}
+	}
+}
+
+// 读取版本并建立子项目
+def settings = new JsonSlurper().parseText(file('settings.json').text)
+for (String version : settings.versions) {
+	include(":$version")
+
+	def proj = project(":$version")
+	proj.projectDir = file("versions/$version")
+	proj.buildFileName = "../../common.gradle"
 }

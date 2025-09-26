@@ -1,11 +1,30 @@
 plugins {
-	id 'fabric-loom' version '1.11-SNAPSHOT'
-	id 'maven-publish'
+	id 'fabric-loom' version '1.10-SNAPSHOT'
 	id 'com.github.johnrengelman.shadow' version '8.1.1'
+
+	// More Version
+	// https://github.com/ReplayMod/preprocessor
+	// https://github.com/Fallen-Breath/preprocessor
+	id 'com.replaymod.preprocess' version '9d21b334a7'
 }
 
 version = project.mod_version
 group = project.maven_group
+
+preprocess {
+	strictExtraMappings.set(false)
+
+	def mc11904 = createNode("1.19.4", 1_19_04, "")
+	def mc12001 = createNode("1.20.1", 1_20_01, "")
+	def mc12101 = createNode("1.21.1", 1_21_01, "")
+
+	// link的起点一定要是主项目，向上向下link均可
+	// mapping文件稍后会讲，这里先新建一个
+	// 也可以不用mapping，不用的话就把file()改成null
+	mc12001.link(mc11904, file("versions/mapping_12001_11904.txt"))
+	mc12101.link(mc12001, file("versions/mapping_12001_12101.txt"))
+
+}
 
 base {
 	archivesName.set("HuHoBot-${project.minecraft_version}-Fabric")
@@ -40,28 +59,23 @@ tasks.register('generateServerConfig', Copy) {
 	group = 'Build'
 	description = 'Generate server config'
 
-	from 'src/main/templates/java'
-	into 'src/main/generated/java'
+	from "$rootDir/src/main/templates/java"
+	into "$buildDir/generated/sources/config/${project.name}"
 
-	// 新增文件名处理
 	include '**/*.template'
-	rename { filename ->
-		filename.replace('.template', '')
-	}
+	rename { it.replace('.template', '') }
 
 	filter { line ->
-		line.replace('${WS_SERVER_URL}',
-				project.findProperty('wsServerUrl') ?: 'ws://127.0.0.1:8080')
+		line.replace('${WS_SERVER_URL}', project.findProperty('wsServerUrl') ?: 'ws://127.0.0.1:8080')
 	}
-
 	filteringCharset = 'UTF-8'
 }
 
 // 将生成的代码目录加入源码集
-sourceSets.main.java.srcDir 'src/main/generated/java'
+//sourceSets.main.java.srcDir 'src/main/generated/java'
 
 // 确保编译前先执行生成任务
-compileJava.dependsOn generateServerConfig
+//compileJava.dependsOn generateServerConfig
 
 clean {
 	delete 'src/main/generated'
@@ -109,13 +123,71 @@ tasks.build {
 	dependsOn tasks.shadowJar
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
+subprojects {
+	tasks.register('generateServerConfig', Copy) {
+		group = 'Build'
+		description = 'Generate server config'
+
+		from "$rootDir/src/main/templates/java"
+		into "$buildDir/generated/sources/config/${project.name}"
+
+		include '**/*.template'
+		rename { it.replace('.template', '') }
+
+		filter { line ->
+			line.replace('${WS_SERVER_URL}', project.findProperty('wsServerUrl') ?: 'ws://127.0.0.1:8080')
+		}
+		filteringCharset = 'UTF-8'
+	}
+}
+
+
+subprojects { sp ->
+	sp.afterEvaluate {
+		def genTask = sp.tasks.named('generateServerConfig')
+		sp.tasks.named('compileJava').configure {
+			dependsOn genTask
+			// 把生成目录加入源码集
+			source(genTask.get().outputs.files)
+		}
+		sp.tasks.matching { it.name == "preprocessCode" }.configureEach { preTask ->
+			// 确保依赖自己项目的 generateServerConfig
+			preTask.dependsOn sp.tasks.named("generateServerConfig")
+
+			// 如果发现用到了其他版本的 generated 目录，也手动声明依赖
+			rootProject.subprojects.each { other ->
+				if (other != sp) {
+					preTask.mustRunAfter other.tasks.named("generateServerConfig")
+				}
+			}
 		}
 	}
-	repositories {
-		mavenLocal()
+}
+
+
+tasks.register('buildAndGather') {
+	subprojects {
+		dependsOn project.tasks.named('generateServerConfig').get()
+		dependsOn project.tasks.named('build').get()
+	}
+
+	doFirst {
+		println 'Gathering builds'
+		def buildLibs = {
+			p -> p.buildDir.toPath().resolve('libs')
+		}
+		delete fileTree(buildLibs(rootProject)) {
+			include '*'
+		}
+		subprojects {
+			copy {
+				from(buildLibs(project)) {
+					include '*.jar'
+					exclude '*-dev.jar', '*-sources.jar', '*-shadow.jar'
+				}
+				into buildLibs(rootProject)
+				duplicatesStrategy DuplicatesStrategy.INCLUDE
+			}
+		}
 	}
 }
