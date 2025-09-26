@@ -10,31 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        version: [
-          #"1.19.4",
-          "1.20.1",
-          #"1.21.8"
-        ]
-        include:
 
-          #- version: "1.19.4"
-          #  mappings: "1.19.4+build.2"
-          #  loader: "0.17.2"
-          #  fabric_api: "0.87.2+1.19.4"
-
-          - version: "1.20.1"
-            mappings: "1.20.1+build.10"
-            loader: "0.17.2"
-            fabric_api: "0.92.6+1.20.1"
-
-          #- version: "1.21.8"
-          #  mappings: "1.21.8+build.1"
-          #  loader: "0.17.2"
-          #  fabric_api: "0.133.4+1.21.8"
-
-    name: Build for Minecraft ${{ matrix.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,23 +26,21 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build for ${{ matrix.version }} with memory optimization
+      - name: Build with Gradle
+        env:
+          WS_SERVER_URL: ${{ secrets.WS_SERVER_URL }}
         run: |
-          ./gradlew build \
-            -Pminecraft_version=${{ matrix.version }} \
-            -Pyarn_mappings=${{ matrix.mappings }} \
-            -Ploader_version=${{ matrix.loader }} \
-            -Pfabric_api_version=${{ matrix.fabric_api }} \
+          ./gradlew buildAndGather \
+            -PwsServerUrl="$WS_SERVER_URL"
             -Dorg.gradle.jvmargs="-Xmx4g -Xms2g -XX:MaxMetaspaceSize=1g" \
             --no-daemon
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: huhobot-${{ matrix.version }}
+          name: huhobot-fabric
           path: |
             build/libs/*.jar
-            !build/libs/*-sources.jar
           if-no-files-found: error
 
   release:
@@ -116,7 +90,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-artifacts
+          name: huhobot-fabric
           path: artifacts
 
       - name: Setup workspace
@@ -150,4 +124,4 @@ jobs:
             - 构建时间: ${{ steps.get-time.outputs.TIME }}
             - 提交哈希: [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
           files: |
-            artifacts/HuHoBot-*.jar
+            artifacts/*.jar

@@ -102,26 +102,8 @@ shadowJar {
 
 def generatedDir = "$buildDir/generated/sources/config/${project.name}"
 
-
-
-// 只把自己版本的生成目录加入源码集
-//sourceSets.main.java.srcDirs = ['src/main/java', generatedDir]
-//sourceSets.main.java.srcDir generatedDir
-
-// 编译前必须生成
-//compileJava.dependsOn generateServerConfig
-
-
 clean {
     delete generatedDir
-}
-
-
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-tasks.withType(ShadowJar).configureEach {
-    enableRelocation true
-    relocationPrefix 'huhobot.libs'
 }
 
 remapJar {

@@ -24,7 +24,8 @@ public class ConfigManager {
         this.logger = mod.LOGGER;
 
         // 配置目录：服务器根目录/config/huhobot
-        this.configDir = new File(mod.getServer().getRunDirectory().toString(), "config/huhobot");
+        this.configDir = new File(mod.getServer().getRunDirectory().toString()+ "config/huhobot");
+
         if (!configDir.exists() && !configDir.mkdirs()) {
             logger.error("创建配置目录失败！路径：{}", configDir.getAbsolutePath());
         }

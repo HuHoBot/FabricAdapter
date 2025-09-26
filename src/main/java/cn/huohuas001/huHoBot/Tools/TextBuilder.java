@@ -5,6 +5,6 @@ import net.minecraft.text.Text;
 public class TextBuilder {
     public static Text build(String text)
     {
-        return Text.of(text);
+        return Text.literal(text);
     }
 }
