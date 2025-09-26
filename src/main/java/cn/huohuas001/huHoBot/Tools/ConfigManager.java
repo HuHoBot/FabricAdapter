@@ -109,6 +109,7 @@ public class ConfigManager {
     }
 
     // ------------------------------ 通用配置读写工具方法 ------------------------------
+    @SuppressWarnings("unchecked")
     private Object getConfigValueByPath(String path) {
         if (config == null || path == null || path.isEmpty()) {
             return null;
@@ -136,6 +137,7 @@ public class ConfigManager {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private void setConfigValueByPath(String path, Object value) {
         if (config == null) {
             config = new HashMap<>();
