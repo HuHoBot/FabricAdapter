@@ -17,17 +17,19 @@ import cn.huohuas001.huHoBot.GameEvent.ChatListenerApiLegacy;
 //$$ import net.minecraft.network.MessageType;
 //#endif
 import net.minecraft.util.Util;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+
 public class HuHoBot implements DedicatedServerModInitializer {
 	public static final String MOD_ID = "huhobot";
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
 	private static HuHoBot instance;
 	public static MinecraftServer serverInstance;
@@ -217,7 +219,7 @@ public class HuHoBot implements DedicatedServerModInitializer {
 	 */
 	public static void broadcastMessage(String message) {
 		if (serverInstance == null) return;
-		LOGGER.info("[Group Chat] {}", message);
+		LOGGER.info("[Group Chat] "+message);
 		//#if MC>=11900
 		serverInstance.getPlayerManager().broadcast(TextBuilder.build( message), false);
 		//#elseif MC<11802

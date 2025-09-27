@@ -19,6 +19,9 @@
 			"cn.huohuas001.huHoBot.HuHoBot"
 		]
 	},
+	"mixins": [
+		"huhobot.mixins.json"
+	],
 	"depends": {
 		"fabricloader": ">=${loader_version}",
 		"fabric": "*",

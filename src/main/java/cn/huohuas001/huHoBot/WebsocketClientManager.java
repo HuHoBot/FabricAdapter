@@ -2,7 +2,7 @@ package cn.huohuas001.huHoBot;
 
 import cn.huohuas001.huHoBot.Tools.FabricScheduler;
 import com.alibaba.fastjson2.JSONObject;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 import cn.huohuas001.config.ServerConfig;
 
 import java.net.URI;
@@ -43,7 +43,7 @@ public class WebsocketClientManager {
         synchronized (this) {
             reconnectAttempts++;
             if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
-                logger.warn("重连尝试已达到最大次数（{}次），不再尝试连接。", MAX_RECONNECT_ATTEMPTS);
+                logger.warn("重连尝试已达到最大次数（"+MAX_RECONNECT_ATTEMPTS+"次），不再尝试连接。");
                 cancelCurrentTask();
                 return;
             }
@@ -51,7 +51,7 @@ public class WebsocketClientManager {
                 cancelCurrentTask();
                 return;
             }
-            logger.info("尝试重新连接 WebSocket（{}/{}）", reconnectAttempts, MAX_RECONNECT_ATTEMPTS);
+            logger.info("尝试重新连接 WebSocket（"+reconnectAttempts+"/"+MAX_RECONNECT_ATTEMPTS+"）");
             this.connectServer();
         }
     }
@@ -64,7 +64,7 @@ public class WebsocketClientManager {
             currentTask.cancel();
             currentTask = null;
             reconnectAttempts = 0;
-            logger.debug("重连任务已取消");
+            //logger.("重连任务已取消");
         }
     }
 
@@ -75,7 +75,7 @@ public class WebsocketClientManager {
         if (autoDisConnectTask != null) {
             autoDisConnectTask.cancel();
             autoDisConnectTask = null;
-            logger.debug("超时断开任务已取消");
+            //logger.debug("超时断开任务已取消");
         }
     }
 
@@ -86,7 +86,7 @@ public class WebsocketClientManager {
         if (heartBeatTask != null) {
             heartBeatTask.cancel();
             heartBeatTask = null;
-            logger.debug("心跳任务已取消");
+            //logger.debug("心跳任务已取消");
         }
     }
 
@@ -126,7 +126,7 @@ public class WebsocketClientManager {
         cancelAutoDisConnectTask();
         long sixHoursTicks = 6L * 60 * 60 * 20; // 6小时 → Tick
         autoDisConnectTask = FabricScheduler.runTaskLater(this::autoDisConnectClient, sixHoursTicks);
-        logger.debug("超时断开任务已设置（6小时后执行）");
+        //logger.debug("超时断开任务已设置（6小时后执行）");
     }
 
     /**
@@ -135,7 +135,7 @@ public class WebsocketClientManager {
     public void startHeartBeatTask() {
         cancelHeartBeatTask();
         heartBeatTask = FabricScheduler.runDelayedLoop(this::sendHeart, 10*20L); // 30秒 = 600 Tick
-        logger.debug("心跳任务已启动（每10秒一次）");
+        //logger.debug("心跳任务已启动（每10秒一次）");
     }
 
     /**
@@ -155,7 +155,7 @@ public class WebsocketClientManager {
             }
             return true;
         } catch (URISyntaxException e) {
-            logger.error("WebSocket地址格式错误：{}", e.getMessage());
+            logger.error("WebSocket地址格式错误："+e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -171,7 +171,7 @@ public class WebsocketClientManager {
     public void sendHeart() {
         if (isOpen()) {
             client.sendMessage("heart", new JSONObject());
-            logger.debug("已发送心跳包");
+            //logger.debug("已发送心跳包");
         } else {
             logger.warn("心跳包发送失败：WebSocket连接已断开");
             cancelHeartBeatTask();
@@ -185,7 +185,7 @@ public class WebsocketClientManager {
         if (shouldReconnect && currentTask == null) {
             long delayTicks = RECONNECT_DELAY * 20L; // 5秒 → Tick
             currentTask = FabricScheduler.runDelayedLoop(this::autoReconnect, delayTicks);
-            logger.debug("重连任务已启动（每{}秒一次）", RECONNECT_DELAY);
+            //logger.debug("重连任务已启动（每{}秒一次）", RECONNECT_DELAY);
         }
     }
 }

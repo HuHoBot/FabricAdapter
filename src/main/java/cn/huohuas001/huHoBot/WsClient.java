@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 
 public class WsClient extends WebSocketClient {
@@ -57,34 +57,34 @@ public class WsClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        logger.error("连接已断开,错误码:{} 错误信息:{}", code, reason);
+        logger.error("连接已断开,错误码:"+code+" 错误信息:"+reason);
         clientManager.clientReconnect();
     }
 
     /*@Override
     public void onError(Exception ex) {
-        logger.severe("详细错误信息: ");
+        logger.error("详细错误信息: ");
         ex.printStackTrace();
-        logger.severe(ChatColor.DARK_RED + "连接发生错误!错误信息:" + ex.getMessage());
+        logger.error(ChatColor.DARK_RED + "连接发生错误!错误信息:" + ex.getMessage());
         clientManager.clientReconnect();
     }*/
     @Override
     public void onError(Exception ex) {
         logger.error("=== SSL连接错误详情 ===");
-        logger.error("错误类型: {}", ex.getClass().getName());
-        logger.error("错误信息: {}", ex.getMessage());
+        logger.error("错误类型: {}"+ex.getClass().getName());
+        logger.error("错误信息: {}"+ex.getMessage());
 
         if (ex.getCause() != null) {
-            logger.error("根本原因: {}", ex.getCause().getMessage());
+            logger.error("根本原因: {}"+ex.getCause().getMessage());
         }
 
         try {
-            logger.error("当前支持的SSL协议: {}", String.join(", ", SSLContext.getDefault().getSupportedSSLParameters().getProtocols()));
+            logger.error("当前支持的SSL协议: "+String.join(", ", SSLContext.getDefault().getSupportedSSLParameters().getProtocols()));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
         try {
-            logger.error("当前启用的SSL协议: {}", String.join(", ", SSLContext.getDefault().getDefaultSSLParameters().getProtocols()));
+            logger.error("当前启用的SSL协议: {}"+String.join(", ", SSLContext.getDefault().getDefaultSSLParameters().getProtocols()));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

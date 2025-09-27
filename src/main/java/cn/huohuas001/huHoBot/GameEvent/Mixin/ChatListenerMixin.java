@@ -9,30 +9,30 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//#if MC<11800
-//$$ @Mixin(ServerPlayNetworkHandler.class)
-//$$ public class ChatListenerMixin {
+
+@Mixin(ServerPlayNetworkHandler.class)
+public class ChatListenerMixin {
+
+    //#if MC<11800
     //$$ @Inject(method = "onGameMessage", at = @At("HEAD"))
     //$$ private void onChatMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {
     //$$    String msg = packet.getChatMessage();
     //$$    ServerPlayNetworkHandler self = (ServerPlayNetworkHandler)(Object)this;
     //$$    ServerPlayerEntity player = self.player;
-
     //$$    ChatPoster.postChat(player.getName().getString(),msg);
     //$$ }
-//$$ }
-//#elseif MC<11900
-//$$ @Mixin(ServerPlayNetworkHandler.class)
-//$$ public class ChatListenerMixin {
-//$$ @Inject(method = "onChatMessage", at = @At("HEAD"))
-//$$ private void onChatMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {
-//$$    String msg = packet.getChatMessage();
-//$$    ServerPlayNetworkHandler self = (ServerPlayNetworkHandler)(Object)this;
-//$$    ServerPlayerEntity player = self.player;
 
-//$$    ChatPoster.postChat(player.getName().getString(),msg);
-//$$ }
-//$$ }
-//#endif
+    //#elseif MC<11900
+    //$$ @Inject(method = "onChatMessage", at = @At("HEAD"))
+    //$$ private void onChatMessage(ChatMessageC2SPacket packet, CallbackInfo ci) {
+    //$$     String msg = packet.getChatMessage();
+    //$$     ServerPlayNetworkHandler self = (ServerPlayNetworkHandler)(Object)this;
+    //$$     ServerPlayerEntity player = self.player;
+
+    //$$     ChatPoster.postChat(player.getName().getString(),msg);
+    //$$ }
+    //#endif
+}
+
 
 

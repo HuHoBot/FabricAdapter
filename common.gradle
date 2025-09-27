@@ -41,9 +41,10 @@ dependencies {
     implementation "org.java-websocket:Java-WebSocket:1.5.3"
     implementation 'com.alibaba.fastjson2:fastjson2:2.0.52'
     implementation 'org.joml:joml:1.10.5'
+    implementation "org.slf4j:slf4j-simple:2.0.9"
 }
 
-String MIXIN_CONFIG_PATH = 'demomod.mixins.json'
+String MIXIN_CONFIG_PATH = 'huhobot.mixins.json'
 JavaVersion JAVA_COMPATIBILITY
 if (mcVersion >= 12005) {
     JAVA_COMPATIBILITY = JavaVersion.VERSION_21

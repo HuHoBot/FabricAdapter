@@ -1,7 +1,7 @@
 package cn.huohuas001.huHoBot.Tools;
 
 import cn.huohuas001.huHoBot.HuHoBot;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.DumperOptions;
 
@@ -27,7 +27,7 @@ public class ConfigManager {
         this.configDir = new File(mod.getServer().getRunDirectory().toString()+ "config/huhobot");
 
         if (!configDir.exists() && !configDir.mkdirs()) {
-            logger.error("创建配置目录失败！路径：{}", configDir.getAbsolutePath());
+            logger.error("创建配置目录失败！路径："+configDir.getAbsolutePath());
         }
 
         // 配置文件路径
@@ -55,9 +55,9 @@ public class ConfigManager {
             }
 
             Files.copy(defaultConfigStream, configFile.toPath());
-            logger.info("生成默认配置文件：{}", configFile.getAbsolutePath());
+            logger.info("生成默认配置文件："+configFile.getAbsolutePath());
         } catch (IOException e) {
-            logger.error("生成默认配置失败", e);
+            logger.error("生成默认配置失败"+e);
         }
     }
 
@@ -81,7 +81,7 @@ public class ConfigManager {
             }
             logger.info("配置加载完成");
         } catch (IOException e) {
-            logger.error("加载配置失败", e);
+            logger.error("加载配置失败"+e);
             config = new HashMap<>();
         }
     }
@@ -104,7 +104,7 @@ public class ConfigManager {
             yaml.dump(config, writer);
             logger.info("配置已保存");
         } catch (IOException e) {
-            logger.error("保存配置失败", e);
+            logger.error("保存配置失败"+e);
         }
     }
 
@@ -240,7 +240,7 @@ public class ConfigManager {
                 Map<String, Object> commandMap = (Map<String, Object>) item;
                 customCommands.add(commandMap);
             } else {
-                logger.warn("customCommand 中存在无效配置项：{}（应为键值对结构）", item);
+                logger.warn("customCommand 中存在无效配置项："+item+"（应为键值对结构）");
             }
         }
 

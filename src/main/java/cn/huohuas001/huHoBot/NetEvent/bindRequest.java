@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class bindRequest extends EventRunner {
     private final Logger logger = HuHoBot.LOGGER;
@@ -14,7 +14,7 @@ public class bindRequest extends EventRunner {
     @Override
     public boolean run() {
         String bindCode = body.getString("bindCode");
-        logger.info("收到一个新的绑定请求，如确认绑定，请输入\"/huhobot bind {}\"来进行确认", bindCode);
+        logger.info("收到一个新的绑定请求，如确认绑定，请输入\"/huhobot bind "+bindCode+"\"来进行确认");
         bindMap.put(bindCode, packId);
         return true;
     }

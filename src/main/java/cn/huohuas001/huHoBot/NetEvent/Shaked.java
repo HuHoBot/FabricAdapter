@@ -1,7 +1,7 @@
 package cn.huohuas001.huHoBot.NetEvent;
 
 import cn.huohuas001.huHoBot.HuHoBot;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 
 public class Shaked extends EventRunner {
@@ -25,7 +25,7 @@ public class Shaked extends EventRunner {
                 shakedProcess();
                 break;
             case 2:
-                logger.info("握手完成!,附加消息:{}", msg);
+                logger.info("握手完成!,附加消息:"+msg);
                 shakedProcess();
                 break;
             case 3:
@@ -38,7 +38,7 @@ public class Shaked extends EventRunner {
                 plugin.sendBindMessage();
                 break;
             default:
-                logger.error("握手失败，原因{}", msg);
+                logger.error("握手失败，原因{}"+msg);
         }
         return true;
     }

@@ -1,7 +1,7 @@
 package cn.huohuas001.huHoBot.NetEvent;
 
 import cn.huohuas001.huHoBot.HuHoBot;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 
 public class ShutDown extends EventRunner {
