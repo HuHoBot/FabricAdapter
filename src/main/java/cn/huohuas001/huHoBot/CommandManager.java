@@ -122,7 +122,11 @@ public class CommandManager {
             try {
 
                 ServerCommandSource source = server.getCommandSource();
+                //#if MC>=11900
                 server.getCommandManager().executeWithPrefix(source, command);
+                //#else
+                //$$ server.getCommandManager().execute(source, command);
+                //#endif
                 callback.accept(new CommandResult(command, "Command executed", "System", true));
             }
             catch (Exception e) {
@@ -140,6 +144,26 @@ public class CommandManager {
     }
 
     // 命令结果类
-        public record CommandResult(String command, String output, String sender, boolean success) {
+    // 命令结果类
+    public class CommandResult {
+        private final String command;
+        private final String output;
+        private final String sender;
+        private final boolean success;
+
+        public CommandResult(String command, String output, String sender, boolean success) {
+            this.command = command;
+            this.output = output;
+            this.sender = sender;
+            this.success = success;
+        }
+
+        // getter方法
+        public String getCommand() { return command; }
+        public String getOutput() { return output; }
+        public String getSender() { return sender; }
+        public boolean isSuccess() { return success; }
+
+        // equals, hashCode, toString方法（可选）
     }
 }

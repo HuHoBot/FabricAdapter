@@ -40,6 +40,7 @@ dependencies {
     // WebSocket支持
     implementation "org.java-websocket:Java-WebSocket:1.5.3"
     implementation 'com.alibaba.fastjson2:fastjson2:2.0.52'
+    implementation 'org.joml:joml:1.10.5'
 }
 
 String MIXIN_CONFIG_PATH = 'demomod.mixins.json'

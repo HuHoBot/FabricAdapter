@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONObject;
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+//#if MC>=11900
 public class ChatListenerApiLegacy {
     public static void register() {
         // 监听玩家发送的聊天消息
@@ -21,3 +22,4 @@ public class ChatListenerApiLegacy {
         });
     }
 }
+//#endif

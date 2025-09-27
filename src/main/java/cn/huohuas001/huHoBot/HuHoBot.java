@@ -9,12 +9,17 @@ import net.minecraft.server.MinecraftServer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+//#if MC>=11900
 import cn.huohuas001.huHoBot.GameEvent.ChatListenerApiLegacy;
-import net.minecraft.text.Text;
+//#endif
+
+//#if MC<11900
+//$$ import net.minecraft.network.MessageType;
+//#endif
+import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +52,9 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		customCommand.loadCommandsFromConfig();
 
 		//注册OnChat监听器
+		//#if MC>=11900
 		ChatListenerApiLegacy.register();
+		//#endif
 
 		// 初始化命令管理器
 		commandManager = new CommandManager();
@@ -143,7 +150,7 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		serverInstance.execute(() -> {
 			commandManager.executeCommand(command,
 					(CommandManager.CommandResult result) -> {
-						String sendCmdMsg = result.output();
+						String sendCmdMsg = result.getOutput();
 						clientManager.getClient().respone("已执行.\n" + sendCmdMsg, "success", packId);
 			});
 		});
@@ -211,7 +218,13 @@ public class HuHoBot implements DedicatedServerModInitializer {
 	public static void broadcastMessage(String message) {
 		if (serverInstance == null) return;
 		LOGGER.info("[Group Chat] {}", message);
+		//#if MC>=11900
 		serverInstance.getPlayerManager().broadcast(TextBuilder.build( message), false);
+		//#elseif MC<11802
+		//$$ serverInstance.getPlayerManager().broadcastChatMessage(TextBuilder.build(message), MessageType.CHAT, Util.NIL_UUID);
+		//#else
+		//$$ serverInstance.getPlayerManager().broadcast(TextBuilder.build(message), MessageType.CHAT, UUID.randomUUID());
+		//#endif
 	}
 
 

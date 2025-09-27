@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "cn.huohuas001.huHoBot.GameEvent.Mixin",
+  "compatibilityLevel": "{{COMPATIBILITY_LEVEL}}",
+  "mixins": [
+    "ChatListenerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
