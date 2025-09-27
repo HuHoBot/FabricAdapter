@@ -1,4 +1,6 @@
-# HuHoBot-Fabric-Adapter v0.0.1
+# HuHoBot-Fabric-Adapter v0.0.2
 
-- 初始化项目
+- Logger: 替换Slfj4为Log4j2
+- Mixin： 修复部分版本的mixin无法监听
+- Websocket: 修复关服卡顿
 

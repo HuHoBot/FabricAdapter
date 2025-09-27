@@ -69,6 +69,9 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		clientManager = new WebsocketClientManager();
 		clientManager.connectServer();
 
+		//启动调度器
+		FabricScheduler.startScheduler();
+
 		LOGGER.info("HuHoBot Loaded. By HuoHuas001");
 
 	}
@@ -81,6 +84,10 @@ public class HuHoBot implements DedicatedServerModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			serverInstance = server;
 			onServerStarted();
+		});
+
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			clientManager.shutdownClient();
 		});
 
 
