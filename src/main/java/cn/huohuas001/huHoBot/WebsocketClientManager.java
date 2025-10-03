@@ -134,8 +134,8 @@ public class WebsocketClientManager {
      */
     public void startHeartBeatTask() {
         cancelHeartBeatTask();
-        heartBeatTask = FabricScheduler.runDelayedLoop(this::sendHeart, 10*20L); // 30秒 = 600 Tick
-        //logger.debug("心跳任务已启动（每10秒一次）");
+        heartBeatTask = FabricScheduler.runDelayedLoop(this::sendHeart, 5*20L); // 30秒 = 600 Tick
+        logger.info("HuHoBot 心跳任务已启动");
     }
 
     /**
@@ -171,7 +171,7 @@ public class WebsocketClientManager {
     public void sendHeart() {
         if (isOpen()) {
             client.sendMessage("heart", new JSONObject());
-            //logger.debug("已发送心跳包");
+            //logger.info("已发送心跳包");
         } else {
             logger.warn("心跳包发送失败：WebSocket连接已断开");
             cancelHeartBeatTask();
