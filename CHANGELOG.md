@@ -1,6 +1,5 @@
-# HuHoBot-Fabric-Adapter v0.0.2
+# HuHoBot-Fabric-Adapter v0.0.3
 
-- Logger: 替换Slfj4为Log4j2
-- Mixin： 修复部分版本的mixin无法监听
-- Websocket: 修复关服卡顿
+- Scheduler: 修复计划任务无法正常执行
+- Sinytra Connector: 修复Sinytra Connector无法正常使用的问题
 
